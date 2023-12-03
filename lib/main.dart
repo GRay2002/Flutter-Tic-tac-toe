@@ -19,8 +19,10 @@ class TicTacToeScreen extends StatefulWidget {
   const TicTacToeScreen({super.key});
 
   @override
-  _TicTacToeScreenState createState() => _TicTacToeScreenState();
+  State<TicTacToeScreen> createState() => _TicTacToeScreenState();
 }
+
+
 
 class _TicTacToeScreenState extends State<TicTacToeScreen> {
   //make a 2D list to represent the board (kinda like a matrix of 3x3 but better)
