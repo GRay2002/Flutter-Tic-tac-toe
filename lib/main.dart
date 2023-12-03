@@ -22,14 +22,15 @@ class TicTacToeScreen extends StatefulWidget {
   State<TicTacToeScreen> createState() => _TicTacToeScreenState();
 }
 
-
-
 class _TicTacToeScreenState extends State<TicTacToeScreen> {
   //make a 2D list to represent the board (kinda like a matrix of 3x3 but better)
   //List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
   //after analyzing the code
   List<List<String>> board = List<List<String>>.generate(
-    3, (int index) => List<String>.filled(3, ''), growable: false,);
+    3,
+    (int index) => List<String>.filled(3, ''),
+    growable: false,
+  );
 
   //to keep track of whose turn it is
   bool isPlayer1Turn = true;
@@ -42,8 +43,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         //Make app bar purple
         backgroundColor: Colors.purple,
         //Make the title centered
-        title: const Text('Tic Tac Toe', textAlign: TextAlign.center, style: TextStyle(fontSize: 30,
-              color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Tic Tac Toe',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -108,7 +110,6 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
     );
   }
 
-
   //check if there is a winner
   bool _checkWinner(int row, int col) {
     // Check row, 3 must be the same symbol to win
@@ -133,7 +134,6 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
     return false;
   }
 
-
   //show dialog when there is a winner
   void _showWinnerDialog() {
     // Show a dialog that congratulates the winner, ask for rematch
@@ -157,7 +157,6 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       },
     );
   }
-
 
   //show dialog when there is a draw (no winner). Similar to the winner dialog but with different text
   void _showDrawDialog() {
@@ -187,7 +186,11 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       //set all the cells to empty
       //board = List.generate(3, (_) => List.filled(3, ''));
       //after analyzing the code
-      board = List<List<String>>.generate(3, (int index) => List<String>.filled(3, ''), growable: false,);
+      board = List<List<String>>.generate(
+        3,
+        (int index) => List<String>.filled(3, ''),
+        growable: false,
+      );
       isPlayer1Turn = true;
       moves = 0;
     });
