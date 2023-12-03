@@ -1,125 +1,190 @@
+// ignore_for_file: always_specify_types
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const TicTacToeApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TicTacToeApp extends StatelessWidget {
+  const TicTacToeApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      home: TicTacToeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class TicTacToeScreen extends StatefulWidget {
+  const TicTacToeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _TicTacToeScreenState createState() => _TicTacToeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _TicTacToeScreenState extends State<TicTacToeScreen> {
+  //make a 2D list to represent the board (kinda like a matrix of 3x3 but better)
+  List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  //to keep track of whose turn it is
+  bool isPlayer1Turn = true;
+  int moves = 0;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        //Make app bar purple
+        backgroundColor: Colors.purple,
+        //Make the title centered
+        title: const Text('Tic Tac Toe', textAlign: TextAlign.center, style: TextStyle(fontSize: 30,
+              color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              isPlayer1Turn ? 'Player 1 (X)' : 'Player 2 (O)',
+              style: TextStyle(fontSize: 28, color: Colors.purple[900], fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 2.0,
+                crossAxisSpacing: 2.0,
+              ),
+              //build the board using the 2D list we made earlier, and make each cell clickable.
+              //The onTap function is called when the cell is clicked
+              itemBuilder: (context, index) {
+                //convert the index to row and column
+                final int row = index ~/ 3;
+                final int col = index % 3;
+                return GestureDetector(
+                  onTap: () {
+                    if (board[row][col] == '' && moves < 9) {
+                      setState(() {
+                        board[row][col] = isPlayer1Turn ? 'X' : 'O';
+                        isPlayer1Turn = !isPlayer1Turn;
+                        moves++;
+
+                        // Check for a winner
+                        if (_checkWinner(row, col)) {
+                          // after the move is made, check if there is a winner. If so call the winner dialog
+                          _showWinnerDialog();
+                        } else if (moves == 9) {
+                          //if the board is full and there is no winner, it's a draw so we call the draw dialog
+                          _showDrawDialog();
+                        }
+                      });
+                    }
+                  },
+
+                  //creat the cells for the board
+                  child: Container(
+                    color: Colors.purple[400],
+                    child: Center(
+                      child: Text(
+                        board[row][col],
+                        style: const TextStyle(fontSize: 40, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              itemCount: 9,
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+
+  //check if there is a winner
+  bool _checkWinner(int row, int col) {
+    // Check row, 3 must be the same symbol to win
+    if (board[row][0] == board[row][1] && board[row][1] == board[row][2]) {
+      return true;
+    }
+
+    // Check column, 3 must be the same symbol to win
+    if (board[0][col] == board[1][col] && board[1][col] == board[2][col]) {
+      return true;
+    }
+
+    // Check diagonals only if the move is on a diagonal cell
+    // and if the move is on the main diagonal, check the main diagonal
+    // else check the other diagonal
+    if ((row == col || row + col == 2) &&
+        ((row == col && board[0][0] == board[1][1] && board[1][1] == board[2][2]) ||
+            (row + col == 2 && board[0][2] == board[1][1] && board[1][1] == board[2][0]))) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  //show dialog when there is a winner
+  void _showWinnerDialog() {
+    // Show a dialog that congratulates the winner, ask for rematch
+    final String winner = isPlayer1Turn ? 'Player 2 (O)' : 'Player 1 (X)';
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Game Over'),
+          content: Text('$winner wins!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _resetGame();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Play Again'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  //show dialog when there is a draw (no winner). Similar to the winner dialog but with different text
+  void _showDrawDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Game Over'),
+          content: const Text("It's a draw!"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _resetGame();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Play Again'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //reset the game
+  void _resetGame() {
+    setState(() {
+      //set all the cells to empty
+      board = List.generate(3, (_) => List.filled(3, ''));
+      isPlayer1Turn = true;
+      moves = 0;
+    });
   }
 }
