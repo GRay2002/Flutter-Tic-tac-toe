@@ -1,5 +1,3 @@
-// ignore_for_file: always_specify_types
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -26,7 +24,10 @@ class TicTacToeScreen extends StatefulWidget {
 
 class _TicTacToeScreenState extends State<TicTacToeScreen> {
   //make a 2D list to represent the board (kinda like a matrix of 3x3 but better)
-  List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
+  //List<List<String>> board = List.generate(3, (_) => List.filled(3, ''));
+  //after analyzing the code
+  List<List<String>> board = List<List<String>>.generate(
+    3, (int index) => List<String>.filled(3, ''), growable: false,);
 
   //to keep track of whose turn it is
   bool isPlayer1Turn = true;
@@ -46,7 +47,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Text(
               isPlayer1Turn ? 'Player 1 (X)' : 'Player 2 (O)',
               style: TextStyle(fontSize: 28, color: Colors.purple[900], fontWeight: FontWeight.bold),
@@ -61,7 +62,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               ),
               //build the board using the 2D list we made earlier, and make each cell clickable.
               //The onTap function is called when the cell is clicked
-              itemBuilder: (context, index) {
+              itemBuilder: (BuildContext context, int index) {
                 //convert the index to row and column
                 final int row = index ~/ 3;
                 final int col = index % 3;
@@ -141,7 +142,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         return AlertDialog(
           title: const Text('Game Over'),
           content: Text('$winner wins!'),
-          actions: [
+          actions: <Widget>[
             TextButton(
               onPressed: () {
                 _resetGame();
@@ -164,7 +165,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         return AlertDialog(
           title: const Text('Game Over'),
           content: const Text("It's a draw!"),
-          actions: [
+          actions: <Widget>[
             TextButton(
               onPressed: () {
                 _resetGame();
@@ -182,7 +183,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   void _resetGame() {
     setState(() {
       //set all the cells to empty
-      board = List.generate(3, (_) => List.filled(3, ''));
+      //board = List.generate(3, (_) => List.filled(3, ''));
+      //after analyzing the code
+      board = List<List<String>>.generate(3, (int index) => List<String>.filled(3, ''), growable: false,);
       isPlayer1Turn = true;
       moves = 0;
     });
